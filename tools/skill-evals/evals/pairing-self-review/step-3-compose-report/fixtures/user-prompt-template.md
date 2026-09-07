@@ -5,4 +5,5 @@
 
 {report}
 
-Compose the pre-flight self-review report. Return the structural assessment JSON only.
+Compose the pre-flight self-review report. Return the structural assessment JSON only,
+with the complete rendered Markdown report in its `report` field.

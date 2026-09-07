@@ -14,6 +14,7 @@ Suites are currently implemented for:
 - **setup-isolated-setup-install** — 9 cases across 3 steps (runtime-routing, step-snapshot-drift, step-scope-confirm)
 - **setup-shared-config-sync** — 11 cases across 2 steps (step-3-decide-action, step-5-draft-commit)
 - **pairing-multi-agent-review** — 15 cases across 6 steps (step-1-collect-diff, step-2a-correctness-pass, step-2b-security-pass, step-2c-conventions-pass, step-3-merge-findings, step-4-compose-report)
+- **pairing-self-review** — 20 cases across 2 steps (step-2-classify-findings, step-3-compose-report)
 - **security-issue-import** — 32 cases across 8 steps
 - **security-issue-triage** — 33 cases across 9 steps
 - **security-issue-deduplicate** — 18 cases across 6 steps (steps 1, 2, 3, 4, 5, 6)
@@ -327,6 +328,7 @@ evals/
         user-prompt-template.md   # template for constructing user turns
         case-N-<name>/
           report.md               # mock tool call outputs for this case
+          trusted-context.md       # optional repository policy from a trusted revision
           expected.json           # ground-truth JSON the model should produce
           case-meta.json           # optional runner tags, e.g. {"tags":["local-smoke"]}
 ```
@@ -344,6 +346,10 @@ The runner resolves the system prompt in order: `step-config.json` → `system-p
 
 External tool calls (GitHub CLI, Gmail MCP, canned-response scan, cross-reference search) are never executed during evals. Their outputs are pre-rendered as structured text inside each case's `report.md` and injected into the user turn as "mock responses." The system prompt instructs the model to treat this content as untrusted input data.
 
+When a case needs repository-authored policy, put it in `trusted-context.md` instead.
+The runner appends that file to the system prompt under a `Trusted repository context` heading.
+Use this channel only for content read from a trusted repository revision, never for PR text, tool output, or other contributor-controlled data.
+
 This means:
 
 - No network calls, no GitHub API, no Gmail MCP during evals
@@ -354,11 +360,17 @@ This means:
 
 Most steps assert an exact JSON match against `expected.json`. Composition steps, where the model writes prose (e.g. a GitHub triage proposal comment), use structural assertions instead. The expected JSON contains boolean flags like `has_security_model_quote` and `has_bare_issue_numbers` and a `mention_handles` list, rather than requiring prose to match verbatim. This avoids brittle string comparison while still catching the properties that matter.
 
+Each structural key maps to a predicate in `assertions.json`.
+Deterministic predicates include `regex`, `contains`, `contains_all`, exact substring `count`, `empty`, `non_empty`, `field_true`, and `max_length`;
+reserve `judge` for properties that cannot be pinned down locally.
+
 For everything in between (decisions wrapped in explanatory prose like `rationale` or `reason`), `--grader-cli` adds a third mode: decision fields stay on exact equality, prose fields go to a cheap judge model that scores "does the candidate support the same conclusion?" See the "Field-aware grading" section above.
 
 ## CI considerations
 
-The runner is currently manual — it prints prompts for human review rather than calling a model API. Wiring it to an API and adding a JSON comparator would make automated CI straightforward, since the prompt construction and ground-truth assertions are already in place.
+Print mode supports manual review, while `--cli` runs the configured model and comparator automatically.
+CI can use a deterministic stand-in CLI for harness behavior;
+live model runs remain an explicit pre-flight because they require provider credentials and can be nondeterministic.
 
 One challenge is model non-determinism. Most cases in this suite have clear, unambiguous correct answers and should pass reliably on a single run. A small number sit closer to a decision boundary — the MEDIUM dedup verdicts and DEFENSE-IN-DEPTH vs NOT-CVE-WORTHY edge cases in particular — and may benefit from being run twice before failing a build. Running every case multiple times would be excessive and slow; the better approach is to tag genuinely borderline cases explicitly and apply a retry budget only to those.
 

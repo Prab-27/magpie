@@ -47,6 +47,11 @@ protecting the ASF contribution path (contributor → committer → PMC).
 - **No state change on the project's behalf.** Agentic Pairing skills are the
   developer's toolkit; they end at a report or a local branch.
 - Same skill format and sandbox/privacy posture as the project-side modes.
+- **Evidence-gated dependency-version findings.** `pairing-self-review` inventories every mandatory direct and transitive constraint path, applies environment markers, and classifies the effective intersection as broken, compatible, or unknown before surfacing a compatibility finding.
+  An empty intersection is always `broken (uninstallable)`, never unknown.
+  Every such finding carries the complete constraint ledger.
+  Remediation follows policy read from the resolved explicit base commit, the default merge base, or `HEAD` for staged-only review;
+  it never follows policy introduced by the changes under review or copies conventions from another project.
 - **Ships before Agentic Autonomous** in the roadmap (MISSION sequencing): Agentic Pairing
   must establish that human reasoning, not implementation chatter, is the
   load-bearing part of the workflow before any auto-merge is considered.
@@ -63,6 +68,8 @@ protecting the ASF contribution path (contributor → committer → PMC).
 2. `docs/modes.md` Agentic Pairing row reflects the shipped count and status.
 3. `pairing-multi-agent-review` fans through three independent passes
    and merges findings without cross-pass anchoring.
+4. `pairing-self-review` never surfaces a dependency-version compatibility finding without a complete constraint ledger and a supported `broken`, `compatible`, or `unknown` classification.
+   Remediation follows adopter policy read from the resolved explicit base commit, the default merge base, or staged-only `HEAD`.
 
 ## Validation
 

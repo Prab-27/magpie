@@ -103,6 +103,8 @@ trustworthy as it grows.
   should capture the same minimal fields every time: skill/family,
   target repo/profile, blocked preflights, false positives, confirmation
   points, privacy/adapter notes, and proposed spec changes.
+- **Eval trust roles stay separate.** Mock tool output in `report.md` enters the user turn as untrusted data.
+  Repository policy read from a trusted revision may enter through a case-level `trusted-context.md`, which the runner appends only to the system prompt.
 
 ## Out of scope
 
@@ -126,12 +128,15 @@ trustworthy as it grows.
    live skill frontmatter.
 7. `spec-inventory` emits a compact, deterministic routing map for specs,
    skills, and tools, and has its own tests.
+8. `skill-evals` keeps mock tool output in the user turn and appends optional
+   trusted repository context only to the system prompt.
 
 ## Validation
 
 ```bash
 uv run --project tools/skill-and-tool-validator --group dev pytest
 uv run --project tools/skill-and-tool-validator --group dev skill-and-tool-validate
+uv run --project tools/skill-evals --group dev pytest tools/skill-evals/tests
 uv run --project tools/spec-inventory --group dev pytest tools/spec-inventory/tests
 ```
 

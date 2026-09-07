@@ -1,0 +1,14 @@
+{
+  "has_conventions_finding": true,
+  "has_correctness_finding": false,
+  "has_advisory_severity": true,
+  "has_blocking_severity": false,
+  "has_advisory_conventions_dependency_finding": true,
+  "has_dependency_evidence": true,
+  "has_runtime_compatible": true,
+  "has_runtime_broken": false,
+  "has_release_marker_recommendation": true,
+  "has_complete_constraint_ledger": true,
+  "has_compatible_advisory_marker_finding": true,
+  "has_nonempty_diff": true
+}

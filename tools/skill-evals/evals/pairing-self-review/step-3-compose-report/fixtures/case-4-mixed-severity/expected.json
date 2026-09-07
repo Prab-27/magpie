@@ -9,5 +9,6 @@
   "readiness_signal": "blocking",
   "blocking_count": 1,
   "advisory_count": 2,
+  "has_rendered_report": true,
   "has_attribution_footer": true
 }

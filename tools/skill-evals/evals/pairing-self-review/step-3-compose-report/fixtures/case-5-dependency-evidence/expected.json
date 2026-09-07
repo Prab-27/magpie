@@ -9,6 +9,9 @@
   "readiness_signal": "blocking",
   "blocking_count": 1,
   "advisory_count": 0,
+  "has_dependency_evidence": true,
+  "has_single_dependency_source_ledger": true,
+  "has_exactly_one_dependency_evidence": true,
   "has_rendered_report": true,
   "has_attribution_footer": true
 }

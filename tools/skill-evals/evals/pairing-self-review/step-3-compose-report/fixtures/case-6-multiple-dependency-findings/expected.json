@@ -8,7 +8,10 @@
   "summary_present": true,
   "readiness_signal": "blocking",
   "blocking_count": 1,
-  "advisory_count": 0,
+  "advisory_count": 1,
+  "has_dependency_evidence": true,
+  "has_two_dependency_source_ledgers": true,
+  "has_exactly_two_dependency_evidence": true,
   "has_rendered_report": true,
   "has_attribution_footer": true
 }

@@ -170,13 +170,12 @@ multiply the per-pass cost by the number of review agents.
 
 | Skill | Typical invocation | Token range | Notes |
 |---|---|---|---|
-| `pairing-self-review` | Pre-flight review of a local diff | 10K–50K | Estimated; skill experimental. Scales with diff size and conventions doc length. |
+| `pairing-self-review` | Pre-flight review of a local diff | 10K–60K | Estimated; skill experimental. Scales with diff size plus conventions, dependency, and release-policy doc length. |
 | `pairing-multi-agent-review` | Full three-pass review | 30K–200K | Estimated; skill experimental. 3–4 × single-pass cost. Parallelism reduces latency, not billing. |
 | `pre-first-pr-check` | Newcomer pre-flight checklist on a local branch | 5K–20K | Estimated; skill experimental. Read-only; scales with diff size and convention docs read. |
 
-**Rule of thumb for Agentic Pairing:** a typical pre-flight self-review of a
-medium PR uses 15K–30K tokens. A three-agent review pipeline on
-the same PR: 45K–90K tokens.
+**Rule of thumb for Agentic Pairing:** a typical pre-flight self-review of a medium PR uses 15K–35K tokens.
+A three-agent review pipeline on the same PR uses 45K–90K tokens.
 
 ### Agentic Autonomous
 

@@ -1,0 +1,11 @@
+{
+  "has_correctness_finding": true,
+  "has_blocking_severity": true,
+  "has_blocking_correctness_dependency_finding": true,
+  "has_dependency_evidence": true,
+  "has_direct_lower_bound_recommendation": true,
+  "has_obsolete_cap_removal": true,
+  "has_complete_constraint_ledger": true,
+  "has_uninstallable_blocking_direct_bound_finding": true,
+  "has_nonempty_diff": true
+}

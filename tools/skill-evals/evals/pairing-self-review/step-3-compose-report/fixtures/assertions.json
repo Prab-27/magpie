@@ -14,5 +14,38 @@
   "has_files_changed": {
     "field": "has_files_changed",
     "type": "field_true"
+  },
+  "has_dependency_evidence": {
+    "field": "report",
+    "type": "regex",
+    "pattern": "Dependency evidence:[ \\t]*\\S"
+  },
+  "has_rendered_report": {
+    "field": "report",
+    "type": "non_empty"
+  },
+  "has_single_dependency_source_ledger": {
+    "field": "report",
+    "type": "regex",
+    "flags": "s",
+    "pattern": "(?:^|\\n)- \\*\\*\\[?blocking\\]?\\*\\* `packages/widget-adapter/pyproject\\.toml:12`[^\\n]*(?:(?!\\n[ \\t]*(?:- \\*\\*|###|---)).)*\\n  Dependency evidence:[ \\t]*The direct compat-core>=1\\.8\\.0 path applies on Python 3\\.12 while the transitive >=1\\.12\\.0 marker is inactive there\\. The effective intersection is >=1\\.8\\.0 with partial metadata coverage\\. compat-core==1\\.8\\.0 is a concrete supported failing resolution, so runtime compatibility is broken\\."
+  },
+  "has_two_dependency_source_ledgers": {
+    "field": "report",
+    "type": "regex",
+    "flags": "s",
+    "pattern": "^(?=.*(?:^|\\n)- \\*\\*\\[?blocking\\]?\\*\\* `packages/widget-adapter/pyproject\\.toml:12`[^\\n]*(?:(?!\\n[ \\t]*(?:- \\*\\*|###|---)).)*\\n  Dependency evidence:[ \\t]*The direct >=1\\.8\\.0 path applies on Python 3\\.12 while the transitive >=1\\.12\\.0 marker is inactive\\. The effective intersection is >=1\\.8\\.0 with partial metadata coverage\\. compat-core==1\\.8\\.0 is a concrete supported failing resolution, so runtime compatibility is broken\\.)(?=.*(?:^|\\n)- \\*\\*\\[?advisory\\]?\\*\\* `packages/widget-extra/pyproject\\.toml:14`[^\\n]*(?:(?!\\n[ \\t]*(?:- \\*\\*|###|---)).)*\\n  Dependency evidence:[ \\t]*The direct >=2\\.0 and mandatory transitive >=2\\.2 paths intersect at >=2\\.2\\. Lock metadata exhaustively covers supported environments and every resolved version provides the API, so the runtime graph is compatible; trusted policy still requires a release marker\\.).*"
+  },
+  "has_exactly_one_dependency_evidence": {
+    "field": "report",
+    "type": "count",
+    "substring": "Dependency evidence:",
+    "count": 1
+  },
+  "has_exactly_two_dependency_evidence": {
+    "field": "report",
+    "type": "count",
+    "substring": "Dependency evidence:",
+    "count": 2
   }
 }
