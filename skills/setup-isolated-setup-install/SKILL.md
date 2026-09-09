@@ -541,6 +541,68 @@ the same reason. The `post-checkout` git hook installed by
 worktrees added via `git worktree add` after this install pass
 inherit access automatically — no operator action needed.
 
+### Step V — The vetted-ops split and exclusion
+
+Only applies when the adopter routes forge operations through the
+`vetted-ops` dispatcher — i.e. the repo has
+`.apache-magpie-overrides/tools/vetted-ops/config.toml`, or the
+operator asks for the dispatcher to be wired now. If neither is
+true, skip this step and say so; do not create a policy the project
+has not asked for.
+
+There are two console scripts over one catalogue, and which of them
+gets the `allow` is the entire security question:
+
+| Entry point | Can write? | Permission |
+|---|---|---|
+| `vetted-op-read` | never — refused before policy or `--caller` is consulted | `allow` |
+| `vetted-op` | yes | `ask` |
+
+**Never propose an `allow` on `vetted-op`.** It is tempting, because
+the policy declares a read-only caller and the invocation names it.
+That reasoning is wrong: `--caller` is an argv string chosen by
+whoever runs the command, so an `allow` on the write dispatcher
+grants every operation in the catalogue no matter which caller the
+example names. The read dispatcher needs no such trust — it refuses
+writes structurally.
+
+```jsonc
+"permissions": {
+  "allow": [
+    "Bash(uv run --project ~/.claude/plugins/cache/apache-magpie/magpie-vetted-ops/*/tools/vetted-ops vetted-op-read *)"
+  ],
+  "ask": [
+    "Bash(uv run --project ~/.claude/plugins/cache/apache-magpie/magpie-vetted-ops/*/tools/vetted-ops vetted-op *)"
+  ],
+  "deny": [
+    // the operation catalogue — the read `allow` rests on its shape
+    "Edit(~/.claude/plugins/cache/apache-magpie/magpie-vetted-ops/**)",
+    "Write(~/.claude/plugins/cache/apache-magpie/magpie-vetted-ops/**)",
+    // the policy naming which caller may run which operation
+    "Edit(.apache-magpie-overrides/tools/vetted-ops/**)",
+    "Write(.apache-magpie-overrides/tools/vetted-ops/**)"
+  ]
+}
+```
+
+Tell the operator plainly what this buys and what it does not:
+
+- The catalogue is protected twice — by these rules, and by the
+  plugin cache sitting outside every `sandbox.filesystem.allowWrite`
+  root, so sandboxed Bash cannot write there either.
+- The policy TOML is protected **once**, and that is tolerable only
+  because the read dispatcher ignores policy when it refuses a
+  write. Editing the policy can widen which repo is *read*; it
+  cannot turn a read into a write.
+- Writes are not unattended. They keep the harness confirmation —
+  the dispatcher bounds their *shape*, not the operator's decision
+  to make them.
+
+Do not describe per-caller scoping as isolation. It is
+least-privilege hygiene for a cooperating skill, and it is worth
+having for that, but it stops nothing that chooses to name a
+different caller.
+
 ## After the install lands
 
 Suggest two follow-up routines the user can wire later:

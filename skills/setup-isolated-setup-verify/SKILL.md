@@ -122,7 +122,7 @@ Drift severity:
   path, the version string, the command output, the
   `sandbox.enabled` value — never just "✓" or "✗" alone.
 
-## The 8 checks
+## The 9 checks
 
 The canonical list lives in
 [docs/setup/secure-agent-setup.md → Verification → Via a Claude Code prompt](../../docs/setup/secure-agent-setup.md#via-a-claude-code-prompt-1).
@@ -283,6 +283,44 @@ Walk each in order:
    operator is in **per-project** scope (the default). No further
    sub-check needed — the per-project mode is fully covered by
    the static + live-probe checks above.
+
+9. **The vetted-ops split and exclusion.** Only meaningful when the
+   adopter routes forge operations through the `vetted-ops`
+   dispatcher; if the repo has no
+   `.apache-magpie-overrides/tools/vetted-ops/config.toml` and no
+   `vetted-op` rule, report **n/a** and move on.
+
+   **9a — which dispatcher is allowlisted.** This is the check that
+   matters. `permissions.allow` may contain `vetted-op-read` and
+   must **not** contain `vetted-op`. Finding the write dispatcher in
+   `allow` is ✗ and worth stopping the report to say so plainly: it
+   grants every operation in the catalogue, including `issue-close`
+   and every `pr-review-*`, with no confirmation. It looks safe
+   because the policy declares a read-only caller — but `--caller`
+   is an argv string chosen by whoever runs the command, so the
+   caller name in an example constrains nothing. Verify by
+   inspection, not by trusting a comment next to the rule.
+
+   `vetted-op` in `ask` (or absent) is correct.
+
+   **9b — the exclusion.** `permissions.deny` covers both surfaces,
+   each with `Edit` and `Write`:
+
+   - `~/.claude/plugins/cache/apache-magpie/magpie-vetted-ops/**` —
+     the operation catalogue. The read dispatcher's `allow` rests on
+     its shape, so an editable catalogue dissolves that `allow`.
+   - `.apache-magpie-overrides/tools/vetted-ops/**` — the policy.
+
+   Any of the four missing is ✗.
+
+   Report two things as **notes**, not failures. The policy's
+   protection stops at the agent's editing tools — it sits in the
+   sandbox-writable project root, so a Bash-level write is not
+   covered; this is survivable only because the read dispatcher
+   refuses writes without consulting policy. And per-caller scoping
+   is least-privilege, not isolation: if the report describes it as
+   a boundary, correct that, because it is the misreading that
+   produces a `vetted-op` `allow` in the first place.
 
 ## After the report
 
