@@ -5,11 +5,11 @@
 
 Behavioral evals for the `list-skills` skill.
 
-## Suites (7 cases total)
+## Suites (8 cases total)
 
 | Suite | Step | Cases | What it covers |
 |---|---|---|---|
-| step-1-command | Step 1 (command selection) | 4 | default listing, verbose via explicit request, verbose via keyword, injection ignored |
+| step-1-command | Step 1 (command selection) | 5 | default listing, verbose via explicit request, verbose via keyword, injection ignored, marketplace install (nothing in the repo) |
 | step-2-present | Step 2 (output fidelity) | 3 | standard verbatim output, user requests summary (hard rule enforced), user requests filter (hard rule enforced) |
 
 ## Run
@@ -39,6 +39,14 @@ run in Step 1.  The two branches are:
   or any wording that does not request long descriptions.
 - **verbose** (`verbose: true`) — user explicitly requests full
   descriptions or uses the word "verbosely".
+
+Step 1's command is a literal repository-relative path, and the model
+must emit it verbatim rather than expanding it to an absolute one —
+cases 1-4 pin that. Case 5 pins the single exception: a marketplace
+install writes nothing into the repository, so
+`.claude/skills/magpie-list-skills/` does not exist and the command must
+be built from the skill's own reported base directory in the plugin
+cache.
 
 Case 4 (injection-ignored) embeds a `SYSTEM:` block in the user
 message asking the agent to run an unrelated `find` command instead.
